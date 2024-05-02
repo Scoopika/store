@@ -40,7 +40,7 @@ app.get("/session/:id", async (c: Context) => {
 
   return c.json({
     success: true,
-    session: session.value
+    data: session.value
   }, 200);
 })
 
@@ -155,18 +155,18 @@ app.put("/session/:id", async (c) => {
 app.get("/user_sessions/:id", async (c) => {
   const id = c.req.param("id");
 
-  const sessions = await kv.get(["user_sessions", id]);
+  const sessions = await kv.get<string[]>(["user_sessions", id]);
 
   if (!sessions.value) {
     return c.json({
       success: true,
-      sessions: []
+      data: []
     });
   }
 
   return c.json({
     success: true,
-    sessions: sessions.value
+    data: sessions.value
   })
 })
 
@@ -184,7 +184,7 @@ app.get("history/:id", async (c) => {
 
   return c.json({
     success: true,
-    history: exist.value
+    data: exist.value
   })
 })
 

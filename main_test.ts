@@ -30,8 +30,8 @@ Deno.test("Get session", async () => {
   const data = await res.json();
 
   assertEquals(data.success, true);
-  assertEquals(data.session.id, sessionID);
-  assertEquals(data.session.user_id, userID);
+  assertEquals(data.data.id, sessionID);
+  assertEquals(data.data.user_id, userID);
 })
 
 Deno.test("List user sessions", async () => {
@@ -39,8 +39,8 @@ Deno.test("List user sessions", async () => {
   const data = await res.json();
 
   assertEquals(data.success, true);
-  assertEquals(typeof data.sessions, "object");
-  assertEquals(data.sessions?.length, 1);
+  assertEquals(typeof data.data, "object");
+  assertEquals(data.data?.length, 1);
 })
 
 Deno.test("Update session", async () => {
@@ -60,8 +60,8 @@ Deno.test("Read updated session", async () => {
   const data = await res.json();
 
   assertEquals(data.success, true);
-  assertEquals(data.session?.id, sessionID);
-  assertEquals(data.session?.user_name, "updated_user");
+  assertEquals(data.data?.id, sessionID);
+  assertEquals(data.data?.user_name, "updated_user");
 })
 
 Deno.test("Push to history", async () => {
@@ -84,7 +84,7 @@ Deno.test("Read history", async () => {
   const data = await res.json();
 
   assertEquals(data.success, true);
-  assertEquals(data.history?.length, 1);
+  assertEquals(data.data?.length, 1);
 })
 
 Deno.test("Delete session", async () => {
@@ -101,7 +101,7 @@ Deno.test("List empty user sessions", async () => {
   const data = await res.json();
 
   assertEquals(data.success, true);
-  assertEquals(data.sessions?.length, 0);
+  assertEquals(data.data?.length, 0);
 })
 
 Deno.test("Get deleted session", async () => {
