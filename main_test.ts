@@ -87,6 +87,33 @@ Deno.test("Read history", async () => {
   assertEquals(data.data?.length, 1);
 })
 
+Deno.test("Push to runs", async () => {
+  const res = await fetch(`${URL}/run/${sessionID}`, {
+    method: "POST",
+    body: JSON.stringify({
+      history: [
+        {
+          role: "user",
+          request: {
+            message: "Hello"
+          }
+        }
+      ]
+    })
+  })
+
+  const data = await res.json();
+  assertEquals(data.success, true);
+})
+
+Deno.test("Read runs", async () => {
+  const res = await fetch(`${URL}/run/${sessionID}`)
+  const data = await res.json();
+
+  assertEquals(data.success, true);
+  assertEquals(data.data?.length, 1);
+})
+
 Deno.test("Delete session", async () => {
   const res = await fetch(`${URL}/session/${sessionID}`, {
     method: "DELETE",

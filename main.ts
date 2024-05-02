@@ -1,4 +1,4 @@
-import * as types from "npm:@scoopika/types";
+import * as types from "npm:@scoopika/types@1.3.6";
 import { Hono, Context } from "hono";
 import { cors } from "hono/cors";
 
@@ -16,7 +16,7 @@ app.use("/*", cors({
   origin: ["*"]
 }))
 
-// <TOKEN_MIDDLEWARE>
+// <TOKEN_MIDDLEWARE >
 
 app.get("/session/:id", async (c: Context) => {
 
@@ -29,7 +29,9 @@ app.get("/session/:id", async (c: Context) => {
     }, 400);
   }
 
-  const session = await kv.get<types.StoreSession>(["sessions", id]);
+  const session = await kv.get<types.StoreSession>(
+    ["sessions", id]
+  );
 
   if (!session.value) {
     return c.json({
@@ -68,6 +70,7 @@ app.post("/session/:id", async (c) => {
 
   await kv.set(["sessions", id], session);
   await kv.set(["history", id], []);
+  await kv.set(["runs", id], []);
 
   if (session.user_id) {
     const exist_user = await kv.get<string[]>(["user_sessions", session.user_id]);
@@ -217,6 +220,55 @@ app.post("/history/:id", async (c) => {
   return c.json({
     success: true
   })
+})
+
+app.get("/run/:id", async (c) => {
+
+  const id = c.req.param("id");
+  const data = await kv.get<types.RunHistory[]>(["runs", id]);
+
+  if (!data.value) {
+    return c.json({
+      success: false,
+      error: "Session not found"
+    }, 404);
+  }
+
+  return c.json({
+    success: true,
+    data: data.value
+  });
+})
+
+app.post("/run/:id", async (c) => {
+  const id = c.req.param("id");
+
+  const { history } = await c.req.json<{
+    history: types.RunHistory[]
+  }>();
+
+  if (!history) {
+    return c.json({
+      success: false,
+      error: "Invalid request body"
+    }, 400);
+  }
+
+  const exist = await kv.get<types.RunHistory[]>(["runs", id]);
+
+  if (!exist.value) {
+    return c.json({
+      success: false,
+      error: "Session not found"
+    }, 404);
+  }
+
+  const runs = [...exist.value, ...history];
+  await kv.set(["runs", id], runs);
+
+  return c.json({
+    success: true,
+  });
 })
 
 Deno.serve(app.fetch);
