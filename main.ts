@@ -1,6 +1,6 @@
 import * as types from "npm:@scoopika/types@1.3.6";
-import { Hono, Context } from "hono";
-import { cors } from "hono/cors";
+import { Hono, Context } from "https://deno.land/x/hono/mod.ts";
+import { cors } from "https://deno.land/x/hono/middleware.ts";
 
 const kv = await Deno.openKv();
 const app = new Hono();
