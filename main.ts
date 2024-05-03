@@ -16,7 +16,40 @@ app.use("/*", cors({
   origin: ["*"]
 }))
 
-// <TOKEN_MIDDLEWARE>
+app.use("/*", async (c, next) => {
+  const isSecured = Deno.env.get("SECURED");
+  const verifyUrl = Deno.env.get("VERIFY_URL");
+
+  if (!isSecured || !verifyUrl) {
+    return await next();
+  }
+
+  const authHeader = c.req.header("authorization");
+
+  if (!authHeader) {
+    return c.json({
+      success: false,
+      error: "Unauthorized access!"
+    }, 403);
+  }
+
+  const res = await fetch(verifyUrl, {
+    headers: {
+      authorization: authHeader
+    }
+  });
+
+  const verify = await res.json();
+
+  if (!verify || !verify.success) {
+    return c.json({
+      success: false,
+      error: "Unauthorized access!"
+    }, 403);
+  }
+
+  await next();
+})
 
 app.get("/session/:id", async (c: Context) => {
 
