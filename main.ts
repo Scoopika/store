@@ -105,6 +105,7 @@ app.delete("/session/:id", async (c) => {
 
   await kv.delete(["sessions", id]);
   await kv.delete(["history", id]);
+  await kv.delete(["runs", id]);
 
   const exist_user = exist.value.user_id;
 
