@@ -19,8 +19,9 @@ app.use("/*", cors({
 app.use("/*", async (c, next) => {
   const isSecured = Deno.env.get("SECURED");
   const verifyUrl = Deno.env.get("VERIFY_URL");
+  const userId = Deno.env.get("USER_ID");
 
-  if (!isSecured || !verifyUrl) {
+  if (!isSecured || !verifyUrl || !userId) {
     return await next();
   }
 
@@ -34,9 +35,13 @@ app.use("/*", async (c, next) => {
   }
 
   const res = await fetch(verifyUrl, {
+    method: "POST",
     headers: {
       authorization: authHeader
-    }
+    },
+    body: JSON.stringify({
+      user_id: userId
+    })
   });
 
   const verify = await res.json();
