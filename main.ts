@@ -16,7 +16,7 @@ app.use("/*", cors({
   origin: ["*"]
 }))
 
-// <TOKEN_MIDDLEWARE >
+// <TOKEN_MIDDLEWARE>
 
 app.get("/session/:id", async (c: Context) => {
 
